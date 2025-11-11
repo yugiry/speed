@@ -1,4 +1,56 @@
 #include "DxLib.h"
+#include <vector>
+
+using namespace std;
+
+//定数定義--------------------------------------------------------------
+	//ゲーム画面の大きさ
+constexpr int WINDOW_WIDTH = 720;
+constexpr int WINDOW_HEIGHT = 640;
+//カード一枚の大きさ
+constexpr int CARD_WIDTH = 64;
+constexpr int CARD_HEIGHT = 92;
+//エリアの大きさ
+constexpr int AREA_WIDTH = 70;
+constexpr int AREA_HEIGHT = 98;
+//プレイヤー側の１枚目のカードを置く位置
+constexpr int PLAYER_CARD_START_X = WINDOW_WIDTH / 2 - CARD_WIDTH / 2 - AREA_WIDTH * 3 / 2;
+constexpr int PLAYER_CARD_START_Y = WINDOW_HEIGHT / 2 + CARD_HEIGHT / 2 + 50;
+//ＣＰＵ側の１枚目のカードを置く位置
+constexpr int CPU_CARD_START_X = WINDOW_WIDTH / 2 + CARD_WIDTH + 15;
+constexpr int CPU_CARD_START_Y = WINDOW_HEIGHT / 2 - CARD_HEIGHT * 3 / 2 - 50;
+//手札にあるカードの間隔
+constexpr int CARD_SPACE = 10;
+//画像のトランプの数
+constexpr int CHORI_NUM = 13;
+constexpr int CVER_NUM = 4;
+
+typedef struct Point
+{
+	int x, y;
+}Point;
+
+typedef struct Vector
+{
+	int x, y;
+}Vector;
+
+class CARD
+{
+private:
+	Point pos;
+	int num;
+public:
+	CARD();
+};
+
+class DECK :public CARD
+{
+private:
+	vector<CARD> cards;
+public:
+	DECK();
+};
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 	_In_ LPSTR lpCmdLine, _In_ int nShowCmd)
@@ -28,38 +80,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 	//トランプの横サイズ：64、縦サイズ：92
 
 	int mouseX, mouseY;//カーソル位置保存用
-
-	typedef struct Point
-	{
-		int x, y;
-	}Point;
-
-	typedef struct Vector
-	{
-		int x, y;
-	}Vector;
-
-	//定数定義--------------------------------------------------------------
-	//ゲーム画面の大きさ
-	constexpr int WINDOW_WIDTH = 720;
-	constexpr int WINDOW_HEIGHT = 640;
-	//カード一枚の大きさ
-	constexpr int CARD_WIDTH = 64;
-	constexpr int CARD_HEIGHT = 92;
-	//エリアの大きさ
-	constexpr int AREA_WIDTH = 70;
-	constexpr int AREA_HEIGHT = 98;
-	//プレイヤー側の１枚目のカードを置く位置
-	constexpr int PLAYER_CARD_START_X = WINDOW_WIDTH / 2 - CARD_WIDTH / 2 - AREA_WIDTH * 3 / 2;
-	constexpr int PLAYER_CARD_START_Y = WINDOW_HEIGHT / 2 + CARD_HEIGHT / 2 + 50;
-	//ＣＰＵ側の１枚目のカードを置く位置
-	constexpr int CPU_CARD_START_X = WINDOW_WIDTH / 2 + CARD_WIDTH + 15;
-	constexpr int CPU_CARD_START_Y = WINDOW_HEIGHT / 2 - CARD_HEIGHT * 3 / 2 - 50;
-	//手札にあるカードの間隔
-	constexpr int CARD_SPACE = 10;
-	//画像のトランプの数
-	constexpr int CHORI_NUM = 13;
-	constexpr int CVER_NUM = 4;
 
 	//変数定義--------------------------------------------------------------
 	Point PLAYER_CARD[4];
@@ -140,6 +160,14 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 			DrawGraph(AREA_POS[i].x, AREA_POS[i].y, area, true);
 		}
 		//エリアに置かれたカードの表示
+		if (left_area != -1)
+		{
+
+		}
+		if (right_area != -1)
+		{
+
+		}
 
 		//手札カードの配置
 		for (int i = 0; i < 4; i++)

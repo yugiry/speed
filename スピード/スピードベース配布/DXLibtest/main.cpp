@@ -4,8 +4,8 @@
 
 using namespace std;
 
-//定数定義--------------------------------------------------------------
-	//ゲーム画面の大きさ
+#pragma region 定数定義
+//ゲーム画面の大きさ
 constexpr int WINDOW_WIDTH = 720;
 constexpr int WINDOW_HEIGHT = 640;
 //カード一枚の大きさ
@@ -30,6 +30,9 @@ constexpr int DECK_NUM = 26;
 //手札の枚数
 constexpr int HAND_NUM = 4;
 
+#pragma endregion
+
+#pragma region 構造体定義
 typedef struct Point
 {
 	int x, y;
@@ -45,6 +48,27 @@ typedef struct CARD{
 	int num{ -1 };
 	bool oncard{ false };
 }CARD;
+
+#pragma endregion
+
+class CPlayer
+{
+private:
+
+public:
+	CPlayer();
+};
+
+class CCPU
+{
+private:
+
+public:
+	CCPU();
+};
+
+//ランダムを生成
+int Range_Random_Number(int, int);
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 	_In_ LPSTR lpCmdLine, _In_ int nShowCmd)
@@ -75,7 +99,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 
 	int mouseX, mouseY;//カーソル位置保存用
 
-	//変数定義--------------------------------------------------------------
+#pragma region 変数定義
 	vector<CARD> PLAYER_DECK;
 	vector<CARD> CPU_DECK;
 	CARD PLAYER_CARD[HAND_NUM];
@@ -88,6 +112,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 	int left_area{ -1 };
 	int right_area{ -1 };
 
+
+	int thinking_time{ 0 };
+	int thinking_interval{ -1 };
+
+#pragma endregion
+
+	CPlayer PLAYER;
+	CCPU CPU;
+
+#pragma region 初期化
 	{
 		int i;
 		//プレイヤーとＣＰＵのデッキの初期化
@@ -127,7 +161,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 	//エリアの初期位置
 	AREA_POS[0] = { WINDOW_WIDTH / 2 - AREA_WIDTH / 2 - AREA_WIDTH, WINDOW_HEIGHT / 2 - AREA_HEIGHT / 2 };
 	AREA_POS[1] = { WINDOW_WIDTH / 2 - AREA_WIDTH / 2 + AREA_WIDTH, WINDOW_HEIGHT / 2 - AREA_HEIGHT / 2 };
-
 	AREA_CARD[0] = CPU_DECK[0];
 	AREA_CARD[1] = PLAYER_DECK[0];
 	CPU_DECK.erase(CPU_DECK.begin());
@@ -137,6 +170,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 	AREA_CARD[0].oncard = true;
 	AREA_CARD[1].oncard = true;
 
+#pragma endregion
+
+	//ＣＰＵのインターバルを設定
+	thinking_interval = Range_Random_Number(5, 10) * 100;
+
 	while (1) 
 	{
 		//裏画面のデータを全て削除
@@ -144,6 +182,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 
 		//処理----------------------------------------------------------------
 
+#pragma region プレイヤーの動き
 		//マウスカーソルの位置を取得
 		GetMousePoint(&mouseX, &mouseY);
 
@@ -172,7 +211,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 			if (mouseX > AREA_POS[0].x && mouseX < AREA_POS[0].x + AREA_WIDTH && mouseY > AREA_POS[0].y && mouseY < AREA_POS[0].y + AREA_HEIGHT)
 			{
 				int before = PLAYER_CARD[click_card].num % CHORI_NUM - 1;
-				if (PLAYER_CARD[click_card].num % CHORI_NUM + 1 == AREA_CARD[0].num % CHORI_NUM || PLAYER_CARD[click_card].num % CHORI_NUM - 1 == AREA_CARD[0].num % CHORI_NUM)
+				int after = PLAYER_CARD[click_card].num % CHORI_NUM + 1;
+				if (before < 0)before = 12;
+				if (after > 12)after = 0;
+				if (after == AREA_CARD[0].num % CHORI_NUM || before == AREA_CARD[0].num % CHORI_NUM)
 				{
 					//左エリアにカードを配置
 					left_area = click_card;
@@ -190,14 +232,21 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 			//右のエリアとの判定
 			else if (mouseX > AREA_POS[1].x && mouseX < AREA_POS[1].x + AREA_WIDTH && mouseY > AREA_POS[1].y && mouseY < AREA_POS[1].y + AREA_HEIGHT)
 			{
-				//右エリアにカードを配置
-				right_area = click_card;
-				AREA_CARD[1] = PLAYER_CARD[click_card];
-				AREA_CARD[1].pos = { WINDOW_WIDTH / 2 + CARD_WIDTH / 2 + CARD_SPACE / 2,WINDOW_HEIGHT / 2 - CARD_HEIGHT / 2 };
-				AREA_CARD[1].oncard = true;
-				//デッキから一枚取る
-				PLAYER_CARD[click_card] = PLAYER_DECK[0];
-				PLAYER_DECK.erase(PLAYER_DECK.begin());
+				int before = PLAYER_CARD[click_card].num % CHORI_NUM - 1;
+				int after = PLAYER_CARD[click_card].num % CHORI_NUM + 1;
+				if (before < 0)before = 12;
+				if (after > 12)after = 0;
+				if (after == AREA_CARD[1].num % CHORI_NUM || before == AREA_CARD[1].num % CHORI_NUM)
+				{
+					//右エリアにカードを配置
+					right_area = click_card;
+					AREA_CARD[1] = PLAYER_CARD[click_card];
+					AREA_CARD[1].pos = { WINDOW_WIDTH / 2 + CARD_WIDTH / 2 + CARD_SPACE / 2,WINDOW_HEIGHT / 2 - CARD_HEIGHT / 2 };
+					AREA_CARD[1].oncard = true;
+					//デッキから一枚取る
+					PLAYER_CARD[click_card] = PLAYER_DECK[0];
+					PLAYER_DECK.erase(PLAYER_DECK.begin());
+				}
 				PLAYER_CARD[click_card].pos.x = PLAYER_CARD_START_X + click_card * (CARD_WIDTH + CARD_SPACE);
 				PLAYER_CARD[click_card].pos.y = PLAYER_CARD_START_Y;
 				click_card = -1;
@@ -209,7 +258,19 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 				click_card = -1;
 			}
 		}
+#pragma endregion
 
+#pragma region ＣＰＵの動き
+		if (thinking_time >= thinking_interval)
+		{
+
+		}
+		thinking_time++;
+
+
+#pragma endregion
+
+#pragma region 画像表示
 		//画像の描画(位置X、位置Y、グラフィックハンドル、透明度の有効無効)
 		{
 			int CutX, CutY;
@@ -226,11 +287,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 			{
 				CutX = AREA_CARD[0].num % CHORI_NUM; CutY = AREA_CARD[0].num / CHORI_NUM;
 				DrawRectGraph(AREA_CARD[0].pos.x, AREA_CARD[0].pos.y, CutX * CARD_WIDTH, CutY * CARD_HEIGHT, CARD_WIDTH, CARD_HEIGHT, i_card, true);
+				DrawFormatString(AREA_CARD[0].pos.x, AREA_CARD[0].pos.y, GetColor(0, 255, 255), "%d", AREA_CARD[0].num);
 			}
 			if (AREA_CARD[1].oncard)
 			{
 				CutX = AREA_CARD[1].num % CHORI_NUM; CutY = AREA_CARD[1].num / CHORI_NUM;
 				DrawRectGraph(AREA_CARD[1].pos.x, AREA_CARD[1].pos.y, CutX * CARD_WIDTH, CutY * CARD_HEIGHT, CARD_WIDTH, CARD_HEIGHT, i_card, true);
+				DrawFormatString(AREA_CARD[1].pos.x, AREA_CARD[1].pos.y, GetColor(0, 255, 255), "%d", AREA_CARD[1].num);
 			}
 
 			//手札カードの配置
@@ -239,11 +302,15 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 				//プレイヤーのカードを設置
 				CutX = PLAYER_CARD[i].num % CHORI_NUM, CutY = PLAYER_CARD[i].num / CHORI_NUM;
 				DrawRectGraph(PLAYER_CARD[i].pos.x, PLAYER_CARD[i].pos.y, CutX * CARD_WIDTH, CutY * CARD_HEIGHT, CARD_WIDTH, CARD_HEIGHT, i_card, true);
+				DrawFormatString(PLAYER_CARD[i].pos.x, PLAYER_CARD[i].pos.y, GetColor(0, 255, 255), "%d", PLAYER_CARD[i].num);
 				//ＣＰＵのカードを設置
 				CutX = CPU_CARD[i].num % CHORI_NUM, CutY = CPU_CARD[i].num / CHORI_NUM;
 				DrawRectGraph(CPU_CARD[i].pos.x, CPU_CARD[i].pos.y, CutX * CARD_WIDTH, CutY * CARD_HEIGHT, CARD_WIDTH, CARD_HEIGHT, i_card, true);
+				DrawFormatString(CPU_CARD[i].pos.x, CPU_CARD[i].pos.y, GetColor(0, 255, 255), "%d", CPU_CARD[i].num);
 			}
 		}
+
+#pragma endregion
 
 		//--------------------------------------------------------------------
 
@@ -261,4 +328,31 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 	WaitKey();	 //キー入力待ち
 	DxLib_End(); //DXライブラリ使用の終了処理
 	return 0;
+}
+
+#pragma region プレイヤー
+//コンストラクタ
+CPlayer::CPlayer()
+{
+
+}
+
+#pragma endregion
+
+#pragma region ＣＰＵ
+//コンストラクタ
+CCPU::CCPU()
+{
+
+}
+
+#pragma endregion
+
+int Range_Random_Number(int min, int max)
+{
+	random_device rd;
+	default_random_engine engine(rd());
+	uniform_int_distribution<int> dis(min, max);
+
+	return dis(engine);
 }

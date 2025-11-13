@@ -30,6 +30,8 @@ constexpr int DECK_NUM = 26;
 //手札の枚数
 constexpr int HAND_NUM = 4;
 
+constexpr int thinking_interval = 120;
+
 #pragma endregion
 
 #pragma region 構造体定義
@@ -108,13 +110,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 	Point AREA_POS[2];
 	Vector CARD_Vec;
 	bool click{ false };
+	bool game{ false };
 	int click_card{ -1 };
 	int left_area{ -1 };
 	int right_area{ -1 };
 
 
 	int thinking_time{ 0 };
-	int thinking_interval{ -1 };
 
 #pragma endregion
 
@@ -158,117 +160,177 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 		PLAYER_CARD[i].pos = { PLAYER_CARD_START_X + i * (CARD_WIDTH + CARD_SPACE), PLAYER_CARD_START_Y };
 		CPU_CARD[i].pos = { CPU_CARD_START_X - i * (CARD_WIDTH + CARD_SPACE), CPU_CARD_START_Y };
 	}
-	//エリアの初期位置
-	AREA_POS[0] = { WINDOW_WIDTH / 2 - AREA_WIDTH / 2 - AREA_WIDTH, WINDOW_HEIGHT / 2 - AREA_HEIGHT / 2 };
-	AREA_POS[1] = { WINDOW_WIDTH / 2 - AREA_WIDTH / 2 + AREA_WIDTH, WINDOW_HEIGHT / 2 - AREA_HEIGHT / 2 };
-	AREA_CARD[0] = CPU_DECK[0];
-	AREA_CARD[1] = PLAYER_DECK[0];
-	CPU_DECK.erase(CPU_DECK.begin());
-	PLAYER_DECK.erase(PLAYER_DECK.begin());
-	AREA_CARD[0].pos = { WINDOW_WIDTH / 2 - CARD_WIDTH / 2 - CARD_WIDTH - CARD_SPACE / 2,WINDOW_HEIGHT / 2 - CARD_HEIGHT / 2 };
-	AREA_CARD[1].pos = { WINDOW_WIDTH / 2 + CARD_WIDTH / 2 + CARD_SPACE / 2,WINDOW_HEIGHT / 2 - CARD_HEIGHT / 2 };
-	AREA_CARD[0].oncard = true;
-	AREA_CARD[1].oncard = true;
 
 #pragma endregion
-
-	//ＣＰＵのインターバルを設定
-	thinking_interval = Range_Random_Number(5, 10) * 100;
-
 	while (1) 
 	{
 		//裏画面のデータを全て削除
 		ClearDrawScreen();
 
 		//処理----------------------------------------------------------------
-
+#pragma region ゲーム
+		if (!game)
+		{
+			//エリアの初期位置
+			AREA_POS[0] = { WINDOW_WIDTH / 2 - AREA_WIDTH / 2 - AREA_WIDTH, WINDOW_HEIGHT / 2 - AREA_HEIGHT / 2 };
+			AREA_POS[1] = { WINDOW_WIDTH / 2 - AREA_WIDTH / 2 + AREA_WIDTH, WINDOW_HEIGHT / 2 - AREA_HEIGHT / 2 };
+			AREA_CARD[0] = CPU_DECK[0];
+			AREA_CARD[1] = PLAYER_DECK[0];
+			CPU_DECK.erase(CPU_DECK.begin());
+			PLAYER_DECK.erase(PLAYER_DECK.begin());
+			AREA_CARD[0].pos = { WINDOW_WIDTH / 2 - CARD_WIDTH / 2 - CARD_WIDTH - CARD_SPACE / 2,WINDOW_HEIGHT / 2 - CARD_HEIGHT / 2 };
+			AREA_CARD[1].pos = { WINDOW_WIDTH / 2 + CARD_WIDTH / 2 + CARD_SPACE / 2,WINDOW_HEIGHT / 2 - CARD_HEIGHT / 2 };
+			AREA_CARD[0].oncard = true;
+			AREA_CARD[1].oncard = true;
+			game = true;
+		}
+		else
+		{
 #pragma region プレイヤーの動き
-		//マウスカーソルの位置を取得
-		GetMousePoint(&mouseX, &mouseY);
+			//マウスカーソルの位置を取得
+			GetMousePoint(&mouseX, &mouseY);
 
-		if ((GetMouseInput() & MOUSE_INPUT_LEFT) && !click)
-		{
-			for (int i = 0; i < 4; i++)
+			if ((GetMouseInput() & MOUSE_INPUT_LEFT) && !click)
 			{
-				//クリックした時にトランプの上にカーソルがある場合
-				if (mouseX > PLAYER_CARD[i].pos.x && mouseX < PLAYER_CARD[i].pos.x + CARD_WIDTH && mouseY > PLAYER_CARD[i].pos.y && mouseY < PLAYER_CARD[i].pos.y + CARD_HEIGHT)
+				for (int i = 0; i < 4; i++)
 				{
-					click_card = i;
-					CARD_Vec = { PLAYER_CARD[i].pos.x - mouseX,PLAYER_CARD[i].pos.y - mouseY };
+					//クリックした時にトランプの上にカーソルがある場合
+					if (mouseX > PLAYER_CARD[i].pos.x && mouseX < PLAYER_CARD[i].pos.x + CARD_WIDTH && mouseY > PLAYER_CARD[i].pos.y && mouseY < PLAYER_CARD[i].pos.y + CARD_HEIGHT)
+					{
+						click_card = i;
+						CARD_Vec = { PLAYER_CARD[i].pos.x - mouseX,PLAYER_CARD[i].pos.y - mouseY };
+					}
 				}
 			}
-		}
-		click = (GetMouseInput() & MOUSE_INPUT_LEFT);
+			click = (GetMouseInput() & MOUSE_INPUT_LEFT);
 
-		if (click && click_card != -1)
-		{
-			PLAYER_CARD[click_card].pos.x = mouseX + CARD_Vec.x;
-			PLAYER_CARD[click_card].pos.y = mouseY + CARD_Vec.y;
-		}
-		if (!click && click_card != -1)
-		{
-			//左のエリアとの判定
-			if (mouseX > AREA_POS[0].x && mouseX < AREA_POS[0].x + AREA_WIDTH && mouseY > AREA_POS[0].y && mouseY < AREA_POS[0].y + AREA_HEIGHT)
+			if (click && click_card != -1)
 			{
-				int before = PLAYER_CARD[click_card].num % CHORI_NUM - 1;
-				int after = PLAYER_CARD[click_card].num % CHORI_NUM + 1;
-				if (before < 0)before = 12;
-				if (after > 12)after = 0;
-				if (after == AREA_CARD[0].num % CHORI_NUM || before == AREA_CARD[0].num % CHORI_NUM)
+				PLAYER_CARD[click_card].pos.x = mouseX + CARD_Vec.x;
+				PLAYER_CARD[click_card].pos.y = mouseY + CARD_Vec.y;
+			}
+			if (!click && click_card != -1)
+			{
+				//左のエリアとの判定
+				if (mouseX > AREA_POS[0].x && mouseX < AREA_POS[0].x + AREA_WIDTH && mouseY > AREA_POS[0].y && mouseY < AREA_POS[0].y + AREA_HEIGHT)
 				{
-					//左エリアにカードを配置
-					left_area = click_card;
-					AREA_CARD[0] = PLAYER_CARD[click_card];
-					AREA_CARD[0].pos = { WINDOW_WIDTH / 2 - CARD_WIDTH / 2 - CARD_WIDTH - CARD_SPACE / 2,WINDOW_HEIGHT / 2 - CARD_HEIGHT / 2 };
-					AREA_CARD[0].oncard = true;
-					//デッキから一枚取る
-					PLAYER_CARD[click_card] = PLAYER_DECK[0];
-					PLAYER_DECK.erase(PLAYER_DECK.begin());
+					int before = PLAYER_CARD[click_card].num % CHORI_NUM - 1;
+					int after = PLAYER_CARD[click_card].num % CHORI_NUM + 1;
+					if (before < 0)before = 12;
+					if (after > 12)after = 0;
+					if (after == AREA_CARD[0].num % CHORI_NUM || before == AREA_CARD[0].num % CHORI_NUM)
+					{
+						//左エリアにカードを配置
+						left_area = click_card;
+						AREA_CARD[0] = PLAYER_CARD[click_card];
+						AREA_CARD[0].pos = { WINDOW_WIDTH / 2 - CARD_WIDTH / 2 - CARD_WIDTH - CARD_SPACE / 2,WINDOW_HEIGHT / 2 - CARD_HEIGHT / 2 };
+						AREA_CARD[0].oncard = true;
+						//デッキから一枚取る
+						PLAYER_CARD[click_card] = PLAYER_DECK[0];
+						PLAYER_DECK.erase(PLAYER_DECK.begin());
+						thinking_time = 0;
+					}
+					PLAYER_CARD[click_card].pos.x = PLAYER_CARD_START_X + click_card * (CARD_WIDTH + CARD_SPACE);
+					PLAYER_CARD[click_card].pos.y = PLAYER_CARD_START_Y;
+					click_card = -1;
 				}
-				PLAYER_CARD[click_card].pos.x = PLAYER_CARD_START_X + click_card * (CARD_WIDTH + CARD_SPACE);
-				PLAYER_CARD[click_card].pos.y = PLAYER_CARD_START_Y;
-				click_card = -1;
-			}
-			//右のエリアとの判定
-			else if (mouseX > AREA_POS[1].x && mouseX < AREA_POS[1].x + AREA_WIDTH && mouseY > AREA_POS[1].y && mouseY < AREA_POS[1].y + AREA_HEIGHT)
-			{
-				int before = PLAYER_CARD[click_card].num % CHORI_NUM - 1;
-				int after = PLAYER_CARD[click_card].num % CHORI_NUM + 1;
-				if (before < 0)before = 12;
-				if (after > 12)after = 0;
-				if (after == AREA_CARD[1].num % CHORI_NUM || before == AREA_CARD[1].num % CHORI_NUM)
+				//右のエリアとの判定
+				else if (mouseX > AREA_POS[1].x && mouseX < AREA_POS[1].x + AREA_WIDTH && mouseY > AREA_POS[1].y && mouseY < AREA_POS[1].y + AREA_HEIGHT)
 				{
-					//右エリアにカードを配置
-					right_area = click_card;
-					AREA_CARD[1] = PLAYER_CARD[click_card];
-					AREA_CARD[1].pos = { WINDOW_WIDTH / 2 + CARD_WIDTH / 2 + CARD_SPACE / 2,WINDOW_HEIGHT / 2 - CARD_HEIGHT / 2 };
-					AREA_CARD[1].oncard = true;
-					//デッキから一枚取る
-					PLAYER_CARD[click_card] = PLAYER_DECK[0];
-					PLAYER_DECK.erase(PLAYER_DECK.begin());
+					int before = PLAYER_CARD[click_card].num % CHORI_NUM - 1;
+					int after = PLAYER_CARD[click_card].num % CHORI_NUM + 1;
+					if (before < 0)before = 12;
+					if (after > 12)after = 0;
+					if (after == AREA_CARD[1].num % CHORI_NUM || before == AREA_CARD[1].num % CHORI_NUM)
+					{
+						//右エリアにカードを配置
+						right_area = click_card;
+						AREA_CARD[1] = PLAYER_CARD[click_card];
+						AREA_CARD[1].pos = { WINDOW_WIDTH / 2 + CARD_WIDTH / 2 + CARD_SPACE / 2,WINDOW_HEIGHT / 2 - CARD_HEIGHT / 2 };
+						AREA_CARD[1].oncard = true;
+						//デッキから一枚取る
+						PLAYER_CARD[click_card] = PLAYER_DECK[0];
+						PLAYER_DECK.erase(PLAYER_DECK.begin());
+						thinking_time = 0;
+					}
+					PLAYER_CARD[click_card].pos.x = PLAYER_CARD_START_X + click_card * (CARD_WIDTH + CARD_SPACE);
+					PLAYER_CARD[click_card].pos.y = PLAYER_CARD_START_Y;
+					click_card = -1;
 				}
-				PLAYER_CARD[click_card].pos.x = PLAYER_CARD_START_X + click_card * (CARD_WIDTH + CARD_SPACE);
-				PLAYER_CARD[click_card].pos.y = PLAYER_CARD_START_Y;
-				click_card = -1;
+				else
+				{
+					PLAYER_CARD[click_card].pos.x = PLAYER_CARD_START_X + click_card * (CARD_WIDTH + CARD_SPACE);
+					PLAYER_CARD[click_card].pos.y = PLAYER_CARD_START_Y;
+					click_card = -1;
+				}
 			}
-			else
-			{
-				PLAYER_CARD[click_card].pos.x = PLAYER_CARD_START_X + click_card * (CARD_WIDTH + CARD_SPACE);
-				PLAYER_CARD[click_card].pos.y = PLAYER_CARD_START_Y;
-				click_card = -1;
-			}
-		}
 #pragma endregion
 
 #pragma region ＣＰＵの動き
-		if (thinking_time >= thinking_interval)
-		{
-
-		}
-		thinking_time++;
+			if (thinking_time >= thinking_interval)
+			{
+				//手札のトランプを調べる
+				for (int i = 0; i < 4; i++)
+				{
+					///エリアに出ているトランプを調べる
+					for (int j = 0; j < 2; j++)
+					{
+						int before = CPU_CARD[i].num % CHORI_NUM - 1;
+						int after = CPU_CARD[i].num % CHORI_NUM + 1;
+						if (before < 0)before = 12;
+						if (after > 12)after = 0;
+						if (before == (AREA_CARD[j].num % CHORI_NUM) || after == (AREA_CARD[j].num % CHORI_NUM))
+						{
+							//エリアにトランプを置く
+							AREA_CARD[j] = CPU_CARD[i];
+							AREA_CARD[j].pos = { WINDOW_WIDTH / 2 + CARD_WIDTH / 2 + CARD_SPACE / 2,WINDOW_HEIGHT / 2 - CARD_HEIGHT / 2 };
+							AREA_CARD[j].oncard = true;
+							//デッキから一枚取る
+							CPU_CARD[i] = CPU_DECK[0];
+							CPU_CARD[i].pos.x = CPU_CARD_START_X - i * (CARD_WIDTH + CARD_SPACE);
+							CPU_CARD[i].pos.y = CPU_CARD_START_Y;
+							CPU_DECK.erase(CPU_DECK.begin());
+							thinking_time = 0;
+							break;
+						}
+					}
+				}
+			}
+			thinking_time++;
 
 
 #pragma endregion
+
+#pragma region 進行チェック
+
+			game = false;
+			for (int i = 0; i < 2; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					int before = AREA_CARD[i].num % CHORI_NUM - 1;
+					int after = AREA_CARD[i].num % CHORI_NUM + 1;
+
+					if (before == PLAYER_CARD[j].num % CHORI_NUM || after == PLAYER_CARD[j].num % CHORI_NUM)
+					{
+						game = true;
+						break;
+					}
+					if (before == CPU_CARD[j].num % CHORI_NUM || after == CPU_CARD[j].num % CHORI_NUM)
+					{
+						game = true;
+						break;
+					}
+				}
+				if (game)break;
+			}
+
+#pragma endregion
+		}
+
+#pragma endregion
+
+
 
 #pragma region 画像表示
 		//画像の描画(位置X、位置Y、グラフィックハンドル、透明度の有効無効)
@@ -308,6 +370,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 				DrawRectGraph(CPU_CARD[i].pos.x, CPU_CARD[i].pos.y, CutX * CARD_WIDTH, CutY * CARD_HEIGHT, CARD_WIDTH, CARD_HEIGHT, i_card, true);
 				DrawFormatString(CPU_CARD[i].pos.x, CPU_CARD[i].pos.y, GetColor(0, 255, 255), "%d", CPU_CARD[i].num);
 			}
+
+			DrawFormatString(10, 10, GetColor(255, 255, 255), "%d", thinking_time);
 		}
 
 #pragma endregion

@@ -154,6 +154,7 @@
     <ClCompile Include="cpu.cpp" />
     <ClCompile Include="deck.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="master.cpp" />
     <ClCompile Include="player.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +162,7 @@
     <ClInclude Include="cpu.h" />
     <ClInclude Include="deck.h" />
     <ClInclude Include="function.h" />
+    <ClInclude Include="master.h" />
     <ClInclude Include="player.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

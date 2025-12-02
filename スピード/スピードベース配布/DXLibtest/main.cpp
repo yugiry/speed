@@ -1,5 +1,10 @@
+#pragma once
 #include "DxLib.h"
 #include "function.h"
+
+#include "player.h"
+#include "cpu.h"
+#include "master.h"
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 	_In_ LPSTR lpCmdLine, _In_ int nShowCmd)
@@ -17,11 +22,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 
 	//画像---------------------
 	int gh_back;//背景
-	int gh_card;//トランプ
 	int gh_area;//エリア
 	//画像読み込み
 	gh_back = LoadGraph("image\\back.png");
-	gh_card = LoadGraph("image\\card.png");
 	gh_area = LoadGraph("image\\area.png");
 
 	//画像の分割読み込み
@@ -30,6 +33,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 
 	int mouseX, mouseY;//カーソル位置保存用
 
+	Player player;
+
 	while (1) 
 	{
 		//裏画面のデータを全て削除
@@ -37,8 +42,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 
 		//処理----------------------------------------------------------------
 
-		//マウスカーソルの位置を取得
-		GetMousePoint(&mouseX, &mouseY);
+		player.Action();
 
 
 
@@ -47,13 +51,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 		//背景
 		DrawGraph(0, 0, gh_back, true);
 
-		DrawRectGraph(WINDOW_WIDTH / 2 - CARD_WIDTH / 2, WINDOW_HEIGHT / 2 - CARD_HEIGHT / 2, 0, 0, CARD_WIDTH, CARD_HEIGHT, gh_card, true);
-
 		DrawGraph(WINDOW_WIDTH / 2 + AREA_WIDTH / 2, WINDOW_HEIGHT / 2 - AREA_HEIGHT / 2, gh_area, true);
 		DrawGraph(WINDOW_WIDTH / 2 - AREA_WIDTH - AREA_WIDTH / 2, WINDOW_HEIGHT / 2 - AREA_HEIGHT / 2, gh_area, true);
-		
-		for (int i = 0; i < 4; i++)
-			DrawRectGraph(PLAYER_CARD_START_X + (CARD_WIDTH + CARD_SPACE) * i, PLAYER_CARD_START_Y, 0, 0, CARD_WIDTH, CARD_HEIGHT, gh_card, true);
+
+		player.CardDraw();
 
 #pragma endregion
 		//--------------------------------------------------------------------

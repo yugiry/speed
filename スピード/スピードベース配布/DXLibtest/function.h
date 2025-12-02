@@ -1,4 +1,8 @@
 #pragma once
+#include "DxLib.h"
+#include <vector>
+
+using namespace std;
 
 #pragma region íËêî
 constexpr int WINDOW_WIDTH = 720;
@@ -12,6 +16,7 @@ constexpr int PLAYER_CARD_START_Y = WINDOW_HEIGHT / 2 + CARD_HEIGHT;
 constexpr int CPU_CARD_START_X = 0;
 constexpr int CPU_CARD_START_Y = 0;
 constexpr int CARD_SPACE = 10;
+constexpr int DECK_MAX = 26;
 
 #pragma endregion
 

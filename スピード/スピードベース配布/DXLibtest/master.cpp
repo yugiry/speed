@@ -25,15 +25,19 @@ void Master::CheckRightArea(Area& a, Player& p, Cpu& c)
 	for (int i = 0; i < 4; i++)
 	{
 		int handnum = p.HandsCardNum(i);
-		if (handnum + 1 != areanum && handnum - 1 != areanum && (handnum == 12 && areanum != 0) && (handnum == 0 && areanum != 12))
+		if (handnum + 1 == areanum || handnum - 1 == areanum || (handnum == 12 && areanum == 0) || (handnum == 0 && areanum == 12))
 		{
 			tmp++;
 		}
 	}
 
-	if (tmp == 8)
+	if (tmp > 0)
 	{
-
+		//まだ出せる
+	}
+	else
+	{
+		//出せない
 	}
 
 }
@@ -45,15 +49,19 @@ void Master::CheckLeftArea(Area& a, Player& p, Cpu& c)
 	for (int i = 0; i < 4; i++)
 	{
 		int handnum = p.HandsCardNum(i);
-		if (handnum + 1 != areanum && handnum - 1 != areanum && (handnum == 12 && areanum != 0) && (handnum == 0 && areanum != 12))
+		if (handnum + 1 == areanum || handnum - 1 == areanum || (handnum == 12 && areanum == 0) || (handnum == 0 && areanum == 12))
 		{
 			tmp++;
 		}
 	}
 
-	if (tmp == 4)
+	if (tmp > 0)
 	{
-
+		//まだ出せる
+	}
+	else
+	{
+		//出せない
 	}
 }
 

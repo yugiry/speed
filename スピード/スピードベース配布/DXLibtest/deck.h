@@ -9,4 +9,5 @@ public:
 	Deck();
 	void DeckSet(int, int);
 	CARD CardGet();
+	bool DeckCheck();
 };

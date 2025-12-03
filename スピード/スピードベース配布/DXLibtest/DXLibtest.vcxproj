@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="area.cpp" />
     <ClCompile Include="cpu.cpp" />
     <ClCompile Include="deck.cpp" />
     <ClCompile Include="main.cpp" />

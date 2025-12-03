@@ -1,18 +1,22 @@
 #pragma once
 #include "function.h"
 #include "deck.h"
+#include "area.h"
 
 class Player:public Deck
 {
 private:
-	int gh_card;
-	int grab_num;
-	bool grab_hand;
+	int gh_card{ -1 };
+	int grab_num{ -1 };
+	bool grab_hand{ false };
 
 	CARD hands[4];
-	Point mouse;
+	Point mouse{ 0,0 };
+	Vector mc_vec{ 0,0 };
 public:
 	Player();
-	void Action();
+	~Player();
+	void Action(Area&);
 	void CardDraw();
+	int HandsCardNum(int);
 };

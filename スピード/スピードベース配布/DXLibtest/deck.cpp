@@ -10,7 +10,7 @@ void Deck::DeckSet(int num, int s = 0)
 {
 	CARD tmp;
 	//num‚Ì”‚¾‚¯ƒfƒbƒL‚É’Ç‰Á‚·‚é
-	for (int i = s; i < num; i++)
+	for (int i = s; i < s + num; i++)
 	{
 		tmp.num = i;
 		cards.push_back(tmp);
@@ -28,4 +28,14 @@ CARD Deck::CardGet()
 	cards.erase(cards.begin());
 
 	return tmp;
+}
+
+bool Deck::DeckCheck()
+{
+	if (cards.size() > 0)
+	{
+		return true;
+	}
+
+	return false;
 }

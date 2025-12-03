@@ -5,6 +5,7 @@
 #include "player.h"
 #include "cpu.h"
 #include "master.h"
+#include "area.h"
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 	_In_ LPSTR lpCmdLine, _In_ int nShowCmd)
@@ -20,20 +21,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 	SetDrawScreen(DX_SCREEN_BACK); //描画先を裏画面に変更
 	SetWindowText("speed"); //ウィンドウの名前
 
-	//画像---------------------
-	int gh_back;//背景
-	int gh_area;//エリア
-	//画像読み込み
-	gh_back = LoadGraph("image\\back.png");
-	gh_area = LoadGraph("image\\area.png");
-
-	//画像の分割読み込み
-	//LoadDivGraph(画像ファイルポインタ、分割総数、横分割数、縦分割数、横サイズ、縦サイズ、保存配列ポインタ)
-	//トランプの横サイズ：64、縦サイズ：92
-
-	int mouseX, mouseY;//カーソル位置保存用
+	Master GM;
 
 	Player player;
+	Cpu cpu;
+	Area area;
 
 	while (1) 
 	{
@@ -42,19 +34,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 
 		//処理----------------------------------------------------------------
 
-		player.Action();
-
-
+		GM.Action(area, player, cpu);
+		player.Action(area);
+		cpu.Action(area);
 
 #pragma region 画像処理
-		//画像の描画(位置X、位置Y、グラフィックハンドル、透明度の有効無効)
-		//背景
-		DrawGraph(0, 0, gh_back, true);
 
-		DrawGraph(WINDOW_WIDTH / 2 + AREA_WIDTH / 2, WINDOW_HEIGHT / 2 - AREA_HEIGHT / 2, gh_area, true);
-		DrawGraph(WINDOW_WIDTH / 2 - AREA_WIDTH - AREA_WIDTH / 2, WINDOW_HEIGHT / 2 - AREA_HEIGHT / 2, gh_area, true);
-
+		GM.Draw();
+		area.AreaDraw();
 		player.CardDraw();
+		cpu.CardDraw();
 
 #pragma endregion
 		//--------------------------------------------------------------------
@@ -66,9 +55,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 		//エスケープキーを押したり、エラーになった場合、breakする
 		if (CheckHitKey(KEY_INPUT_ESCAPE))break;
 	}
-
-	//画像データ削除
-	DeleteGraph(gh_back);
 
 	WaitKey();	 //キー入力待ち
 	DxLib_End(); //DXライブラリ使用の終了処理

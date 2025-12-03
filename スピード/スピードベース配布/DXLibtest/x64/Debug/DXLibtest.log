@@ -1,8 +1,7 @@
-﻿  player.cpp
-C:\Users\GA2A\Desktop\speed\スピード\スピードベース配布\DXLibtest\function.h(24,16): warning C4091: 'typedef ': 変数が何も宣言されていないときは、'Point' の左辺を無視します。
-  (ソース ファイル 'player.cpp' をコンパイルしています)
-  
-C:\Users\GA2A\Desktop\speed\スピード\スピードベース配布\DXLibtest\function.h(30,16): warning C4091: 'typedef ': 変数が何も宣言されていないときは、'CARD' の左辺を無視します。
-  (ソース ファイル 'player.cpp' をコンパイルしています)
-  
+﻿  area.cpp
+  cpu.cpp
+  main.cpp
+  master.cpp
+  player.cpp
+  コードを生成中...
   DXLibtest.vcxproj -> C:\Users\GA2A\Desktop\speed\スピード\スピードベース配布\x64\Debug\DXLibtest.exe

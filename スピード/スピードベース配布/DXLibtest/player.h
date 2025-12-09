@@ -3,6 +3,7 @@
 #include "deck.h"
 #include "area.h"
 
+class Area;
 class Player:public Deck
 {
 private:
@@ -16,7 +17,7 @@ private:
 public:
 	Player();
 	~Player();
-	void Action(Area&);
+	void Action(Area& );
 	void CardDraw();
 	int HandsCardNum(int);
 };

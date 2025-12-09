@@ -13,6 +13,6 @@ public:
 	~Master();
 	void Action(Area&, Player&, Cpu&);
 	void Draw();
-	void CheckRightArea(Area&, Player&, Cpu&);
-	void CheckLeftArea(Area&, Player&, Cpu&);
+	bool CheckRightArea(Area&, Player&, Cpu&);
+	bool CheckLeftArea(Area&, Player&, Cpu&);
 };

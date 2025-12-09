@@ -8,9 +8,12 @@ Master::Master()
 
 void Master::Action(Area& a, Player& p, Cpu& c)
 {
-	//プレイヤーとＣＰＵがエリアにトランプを置けるか
-	CheckRightArea(a, p, c);
-	CheckLeftArea(a, p, c);
+	//プレイヤーとＣＰＵが手札からトランプを出せるか
+	if (CheckRightArea(a, p, c) && CheckLeftArea(a, p, c))
+	{
+		//a.RightAreaSet(p.CardGet());
+		//a.RightAreaSet(c.CardGet());
+	}
 }
 
 void Master::Draw()
@@ -18,7 +21,7 @@ void Master::Draw()
 	DrawGraph(0, 0, gh_back, true);
 }
 
-void Master::CheckRightArea(Area& a, Player& p, Cpu& c)
+bool Master::CheckRightArea(Area& a, Player& p, Cpu& c)
 {
 	int tmp = 0;
 	int areanum = a.RightAreaNumGet();
@@ -30,19 +33,28 @@ void Master::CheckRightArea(Area& a, Player& p, Cpu& c)
 			tmp++;
 		}
 	}
+	for (int i = 0; i < 4; i++)
+	{
+		int handnum = c.HandsCardNum(i);
+		if (handnum + 1 == areanum || handnum - 1 == areanum || (handnum == 12 && areanum == 0) || (handnum == 0 && areanum == 12))
+		{
+			tmp++;
+		}
+	}
 
 	if (tmp > 0)
 	{
 		//まだ出せる
+		return false;
 	}
 	else
 	{
 		//出せない
+		return true;
 	}
-
 }
 
-void Master::CheckLeftArea(Area& a, Player& p, Cpu& c)
+bool Master::CheckLeftArea(Area& a, Player& p, Cpu& c)
 {
 	int tmp = 0;
 	int areanum = a.LeftAreaNumGet();
@@ -54,14 +66,24 @@ void Master::CheckLeftArea(Area& a, Player& p, Cpu& c)
 			tmp++;
 		}
 	}
+	for (int i = 0; i < 4; i++)
+	{
+		int handnum = c.HandsCardNum(i);
+		if (handnum + 1 == areanum || handnum - 1 == areanum || (handnum == 12 && areanum == 0) || (handnum == 0 && areanum == 12))
+		{
+			tmp++;
+		}
+	}
 
 	if (tmp > 0)
 	{
 		//まだ出せる
+		return false;
 	}
 	else
 	{
 		//出せない
+		return true;
 	}
 }
 

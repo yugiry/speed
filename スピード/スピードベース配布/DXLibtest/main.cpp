@@ -27,12 +27,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 	Cpu cpu;
 	Area area;
 
+	area.AreaSet(player, cpu);
+
 	while (1) 
 	{
 		//裏画面のデータを全て削除
 		ClearDrawScreen();
 
 		//処理----------------------------------------------------------------
+
+
 
 		GM.Action(area, player, cpu);
 		player.Action(area);

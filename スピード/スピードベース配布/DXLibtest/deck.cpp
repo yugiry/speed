@@ -1,5 +1,6 @@
 #pragma once
 #include "deck.h"
+#include <random>
 
 Deck::Deck()
 {
@@ -17,7 +18,9 @@ void Deck::DeckSet(int num, int s = 0)
 	}
 
 	//デッキをランダムにする
-
+	int a = GetRand(num);
+	mt19937 rd(a);
+	shuffle(cards.begin(), cards.end(), rd);
 }
 
 CARD Deck::CardGet()

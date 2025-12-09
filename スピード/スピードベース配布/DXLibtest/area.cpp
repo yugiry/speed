@@ -5,8 +5,14 @@ Area::Area()
 {
 	gh_area = LoadGraph("image\\area.png");
 	gh_card = LoadGraph("image\\card.png");
+}
 
-	areas[0].num = 26;
+void Area::AreaSet(Player& p, Cpu& c)
+{
+	areas[0] = p.CardGet();
+	areas[1] = c.CardGet();
+	areas[0].pos = { RIGHTAREA_POSITION_X, RIGHTAREA_POSITION_Y };
+	areas[1].pos = { LEFTAREA_POSITION_X, LEFTAREA_POSITION_Y };
 }
 
 void Area::AreaDraw()
@@ -17,9 +23,9 @@ void Area::AreaDraw()
 	DrawGraph(LEFTAREA_POSITION_X, LEFTAREA_POSITION_Y, gh_area, true);
 
 	if (areas[0].num >= 0)
-		DrawRectGraph(RIGHTAREACARD_POSITION_X, RIGHTAREACARD_POSITION_Y, (areas[0].num % 13) * CARD_WIDTH, (areas[0].num / 13) * CARD_HEIGHT, CARD_WIDTH, CARD_HEIGHT, gh_card, true);
+		DrawRectGraph(areas[0].pos.x, areas[0].pos.y, (areas[0].num % 13) * CARD_WIDTH, (areas[0].num / 13) * CARD_HEIGHT, CARD_WIDTH, CARD_HEIGHT, gh_card, true);
 	if (areas[1].num >= 0)
-		DrawRectGraph(LEFTAREACARD_POSITION_X, LEFTAREACARD_POSITION_Y, (areas[1].num % 13) * CARD_WIDTH, (areas[1].num / 13) * CARD_HEIGHT, CARD_WIDTH, CARD_HEIGHT, gh_card, true);
+		DrawRectGraph(areas[1].pos.x, areas[1].pos.y, (areas[1].num % 13) * CARD_WIDTH, (areas[1].num / 13) * CARD_HEIGHT, CARD_WIDTH, CARD_HEIGHT, gh_card, true);
 
 }
 

@@ -8,6 +8,7 @@ class Master
 {
 private:
 	int gh_back{ -1 };
+	int restart_time{ 0 };
 public:
 	Master();
 	~Master();

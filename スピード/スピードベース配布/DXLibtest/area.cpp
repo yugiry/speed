@@ -11,8 +11,8 @@ void Area::AreaSet(Player& p, Cpu& c)
 {
 	areas[0] = p.CardGet();
 	areas[1] = c.CardGet();
-	areas[0].pos = { RIGHTAREA_POSITION_X, RIGHTAREA_POSITION_Y };
-	areas[1].pos = { LEFTAREA_POSITION_X, LEFTAREA_POSITION_Y };
+	areas[0].pos = { RIGHTAREACARD_POSITION_X, RIGHTAREACARD_POSITION_Y };
+	areas[1].pos = { LEFTAREACARD_POSITION_X, LEFTAREACARD_POSITION_Y };
 }
 
 void Area::AreaDraw()

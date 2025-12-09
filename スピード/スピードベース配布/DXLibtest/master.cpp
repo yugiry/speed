@@ -11,8 +11,30 @@ void Master::Action(Area& a, Player& p, Cpu& c)
 	//プレイヤーとＣＰＵが手札からトランプを出せるか
 	if (CheckRightArea(a, p, c) && CheckLeftArea(a, p, c))
 	{
-		//a.RightAreaSet(p.CardGet());
-		//a.RightAreaSet(c.CardGet());
+		restart_time++;
+	}
+
+	if (restart_time > 300)
+	{
+		//プレイヤーのデッキが残っているか
+		if (p.DeckCheck())
+		{
+			a.RightAreaSet(p.CardGet());
+		}
+		else
+		{
+
+		}
+		//ＣＰＵのデッキが残っているか
+		if (c.DeckCheck())
+		{
+			a.LeftAreaSet(c.CardGet());
+		}
+		else
+		{
+
+		}
+		restart_time = 0;
 	}
 }
 
@@ -24,10 +46,10 @@ void Master::Draw()
 bool Master::CheckRightArea(Area& a, Player& p, Cpu& c)
 {
 	int tmp = 0;
-	int areanum = a.RightAreaNumGet();
+	int areanum = a.RightAreaNumGet() % 13;
 	for (int i = 0; i < 4; i++)
 	{
-		int handnum = p.HandsCardNum(i);
+		int handnum = p.HandsCardNum(i) % 13;
 		if (handnum + 1 == areanum || handnum - 1 == areanum || (handnum == 12 && areanum == 0) || (handnum == 0 && areanum == 12))
 		{
 			tmp++;
@@ -35,7 +57,7 @@ bool Master::CheckRightArea(Area& a, Player& p, Cpu& c)
 	}
 	for (int i = 0; i < 4; i++)
 	{
-		int handnum = c.HandsCardNum(i);
+		int handnum = c.HandsCardNum(i) % 13;
 		if (handnum + 1 == areanum || handnum - 1 == areanum || (handnum == 12 && areanum == 0) || (handnum == 0 && areanum == 12))
 		{
 			tmp++;
@@ -57,10 +79,10 @@ bool Master::CheckRightArea(Area& a, Player& p, Cpu& c)
 bool Master::CheckLeftArea(Area& a, Player& p, Cpu& c)
 {
 	int tmp = 0;
-	int areanum = a.LeftAreaNumGet();
+	int areanum = a.LeftAreaNumGet() % 13;
 	for (int i = 0; i < 4; i++)
 	{
-		int handnum = p.HandsCardNum(i);
+		int handnum = p.HandsCardNum(i) % 13;
 		if (handnum + 1 == areanum || handnum - 1 == areanum || (handnum == 12 && areanum == 0) || (handnum == 0 && areanum == 12))
 		{
 			tmp++;
@@ -68,7 +90,7 @@ bool Master::CheckLeftArea(Area& a, Player& p, Cpu& c)
 	}
 	for (int i = 0; i < 4; i++)
 	{
-		int handnum = c.HandsCardNum(i);
+		int handnum = c.HandsCardNum(i) % 13;
 		if (handnum + 1 == areanum || handnum - 1 == areanum || (handnum == 12 && areanum == 0) || (handnum == 0 && areanum == 12))
 		{
 			tmp++;

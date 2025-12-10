@@ -44,6 +44,7 @@ void Player::Action(Area& area)
 			//持っているトランプがエリアにあるトランプの数字の前後であるか
 			if (grabnum + 1 == areanum || grabnum - 1 == areanum || (areanum == 12 && grabnum == 0) || (areanum == 0 && grabnum == 12))
 			{
+				area.OnPutFlag();
 				area.RightAreaSet(hands[grab_num]);
 				if (DeckCheck())
 					hands[grab_num] = CardGet();
@@ -59,6 +60,7 @@ void Player::Action(Area& area)
 			//持っているトランプがエリアにあるトランプの数字の前後であるか
 			if (grabnum + 1 == areanum || grabnum - 1 == areanum || (areanum == 12 && grabnum == 0) || (areanum == 0 && grabnum == 12))
 			{
+				area.OnPutFlag();
 				area.LeftAreaSet(hands[grab_num]);
 				if (DeckCheck())
 					hands[grab_num] = CardGet();

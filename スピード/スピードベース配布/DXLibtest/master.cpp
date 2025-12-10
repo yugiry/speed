@@ -35,6 +35,7 @@ void Master::Action(Area& a, Player& p, Cpu& c)
 
 		}
 		restart_time = 0;
+		a.OnPutFlag();
 	}
 }
 

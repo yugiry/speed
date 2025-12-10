@@ -49,6 +49,21 @@ void Area::LeftAreaSet(CARD c)
 	areas[1].num = c.num;
 }
 
+bool Area::CheckPutFlag()
+{
+	return card_put;
+}
+
+void Area::OnPutFlag()
+{
+	card_put = true;
+}
+
+void Area::OffPutFlag()
+{
+	card_put = false;
+}
+
 Area::~Area()
 {
 	DeleteGraph(gh_card);

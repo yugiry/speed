@@ -20,4 +20,6 @@ public:
 	void Action(Area& );
 	void CardDraw();
 	int HandsCardNum(int);
+	CARD GetHandCard();
+	bool CheckHands();
 };

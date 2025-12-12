@@ -8,34 +8,59 @@ Master::Master()
 
 void Master::Action(Area& a, Player& p, Cpu& c)
 {
-	//プレイヤーとＣＰＵが手札からトランプを出せるか
-	if (CheckRightArea(a, p, c) && CheckLeftArea(a, p, c))
+	//勝敗判定
 	{
-		restart_time++;
+		if (p.CheckHands())
+		{
+			//プレイヤー勝利
+			PlayerWin();
+		}
+		if (c.CheckHands())
+		{
+			//ＣＰＵ勝利
+			CpuWin();
+		}
 	}
 
-	if (restart_time > 300)
+	if (game_stop)
 	{
-		//プレイヤーのデッキが残っているか
-		if (p.DeckCheck())
+		
+	}
+	if (!game_stop)
+	{
+		//プレイヤーとＣＰＵが手札からトランプを出せるか
+		if (CheckRightArea(a, p, c) && CheckLeftArea(a, p, c))
 		{
-			a.RightAreaSet(p.CardGet());
+			restart_time++;
 		}
-		else
-		{
 
-		}
-		//ＣＰＵのデッキが残っているか
-		if (c.DeckCheck())
+		if (restart_time > 300)
 		{
-			a.LeftAreaSet(c.CardGet());
+			//プレイヤーのデッキが残っているか
+			if (p.DeckCheck())
+			{
+				//デッキからトランプを取る
+				a.RightAreaSet(p.CardGet());
+			}
+			else
+			{
+				//手札からトランプを取る
+				a.RightAreaSet(p.GetHandCard());
+			}
+			//ＣＰＵのデッキが残っているか
+			if (c.DeckCheck())
+			{
+				//デッキからトランプを取る
+				a.LeftAreaSet(c.CardGet());
+			}
+			else
+			{
+				//手札からトランプを取る
+				a.LeftAreaSet(c.GetHandCard());
+			}
+			restart_time = 0;
+			a.OnPutFlag();
 		}
-		else
-		{
-
-		}
-		restart_time = 0;
-		a.OnPutFlag();
 	}
 }
 
@@ -108,6 +133,16 @@ bool Master::CheckLeftArea(Area& a, Player& p, Cpu& c)
 		//出せない
 		return true;
 	}
+}
+
+void Master::PlayerWin()
+{
+	game_stop = true;
+}
+
+void Master::CpuWin()
+{
+	game_stop = true;
 }
 
 Master::~Master()

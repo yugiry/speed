@@ -101,6 +101,38 @@ int Player::HandsCardNum(int n)
 	return hands[n].num;
 }
 
+CARD Player::GetHandCard()
+{
+	CARD tmp;
+	for (int i = 0; i < 4; i++)
+	{
+		if (hands[i].num != -1)
+		{
+			tmp = hands[i];
+			hands[i].num = -1;
+			return tmp;
+		}
+	}
+}
+
+bool Player::CheckHands()
+{
+	int num = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		if (hands[i].num == -1)
+		{
+			num++;
+		}
+	}
+
+	if (num == 4)
+	{
+		return true;
+	}
+	return false;
+}
+
 Player::~Player()
 {
 	DeleteGraph(gh_card);

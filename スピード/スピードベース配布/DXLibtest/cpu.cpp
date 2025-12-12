@@ -78,6 +78,38 @@ int Cpu::HandsCardNum(int n)
 	return hands[n].num;
 }
 
+CARD Cpu::GetHandCard()
+{
+	CARD tmp;
+	for (int i = 0; i < 4; i++)
+	{
+		if (hands[i].num != -1)
+		{
+			tmp = hands[i];
+			hands[i].num = -1;
+			return tmp;
+		}
+	}
+}
+
+bool Cpu::CheckHands()
+{
+	int num = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		if (hands[i].num == -1)
+		{
+			num++;
+		}
+	}
+
+	if (num == 4)
+	{
+		return true;
+	}
+	return false;
+}
+
 Cpu::~Cpu()
 {
 	DeleteGraph(gh_card);

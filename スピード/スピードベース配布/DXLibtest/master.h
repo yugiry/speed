@@ -9,6 +9,7 @@ class Master
 private:
 	int gh_back{ -1 };
 	int restart_time{ 0 };
+	bool game_stop{ false };
 public:
 	Master();
 	~Master();
@@ -16,4 +17,6 @@ public:
 	void Draw();
 	bool CheckRightArea(Area&, Player&, Cpu&);
 	bool CheckLeftArea(Area&, Player&, Cpu&);
+	void PlayerWin();
+	void CpuWin();
 };

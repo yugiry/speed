@@ -40,14 +40,20 @@ void Cpu::Action(Area& area)
 			if ((tmp == left + 1 || tmp == left - 1 || (tmp == 12 && left == 0) || (tmp == 0 && left == 12)) && !draw_card)
 			{
 				area.LeftAreaSet(hands[i]);
-				hands[i] = CardGet();
+				if (DeckCheck())
+				{
+					hands[i] = CardGet();
+				}
 				hands[i].pos = { CPU_CARD_START_X + (CARD_WIDTH + CARD_SPACE) * i,CPU_CARD_START_Y };
 				draw_card = true;
 			}
 			if ((tmp == right + 1 || tmp == right - 1 || (tmp == 12 && right == 0) || (tmp == 0 && right == 12)) && !draw_card)
 			{
 				area.RightAreaSet(hands[i]);
-				hands[i] = CardGet();
+				if (DeckCheck())
+				{
+					hands[i] = CardGet();
+				}
 				hands[i].pos = { CPU_CARD_START_X + (CARD_WIDTH + CARD_SPACE) * i,CPU_CARD_START_Y };
 				draw_card = true;
 			}

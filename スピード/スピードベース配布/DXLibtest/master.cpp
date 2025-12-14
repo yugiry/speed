@@ -6,7 +6,7 @@ Master::Master()
 	gh_back = LoadGraph("image\\back.png");
 }
 
-void Master::Action(Area& a, Player& p, Cpu& c)
+bool Master::Action(Area& a, Player& p, Cpu& c)
 {
 	//èüîsîªíË
 	{
@@ -24,7 +24,7 @@ void Master::Action(Area& a, Player& p, Cpu& c)
 
 	if (game_stop)
 	{
-		
+		return true;
 	}
 	if (!game_stop)
 	{
@@ -62,6 +62,8 @@ void Master::Action(Area& a, Player& p, Cpu& c)
 			a.OnPutFlag();
 		}
 	}
+
+	return false;
 }
 
 void Master::Draw()
@@ -76,17 +78,23 @@ bool Master::CheckRightArea(Area& a, Player& p, Cpu& c)
 	for (int i = 0; i < 4; i++)
 	{
 		int handnum = p.HandsCardNum(i) % 13;
-		if (handnum + 1 == areanum || handnum - 1 == areanum || (handnum == 12 && areanum == 0) || (handnum == 0 && areanum == 12))
+		if (handnum != -1)
 		{
-			tmp++;
+			if (handnum + 1 == areanum || handnum - 1 == areanum || (handnum == 12 && areanum == 0) || (handnum == 0 && areanum == 12))
+			{
+				tmp++;
+			}
 		}
 	}
 	for (int i = 0; i < 4; i++)
 	{
 		int handnum = c.HandsCardNum(i) % 13;
-		if (handnum + 1 == areanum || handnum - 1 == areanum || (handnum == 12 && areanum == 0) || (handnum == 0 && areanum == 12))
+		if (handnum != -1)
 		{
-			tmp++;
+			if (handnum + 1 == areanum || handnum - 1 == areanum || (handnum == 12 && areanum == 0) || (handnum == 0 && areanum == 12))
+			{
+				tmp++;
+			}
 		}
 	}
 
@@ -109,17 +117,23 @@ bool Master::CheckLeftArea(Area& a, Player& p, Cpu& c)
 	for (int i = 0; i < 4; i++)
 	{
 		int handnum = p.HandsCardNum(i) % 13;
-		if (handnum + 1 == areanum || handnum - 1 == areanum || (handnum == 12 && areanum == 0) || (handnum == 0 && areanum == 12))
+		if (handnum != -1)
 		{
-			tmp++;
+			if (handnum + 1 == areanum || handnum - 1 == areanum || (handnum == 12 && areanum == 0) || (handnum == 0 && areanum == 12))
+			{
+				tmp++;
+			}
 		}
 	}
 	for (int i = 0; i < 4; i++)
 	{
 		int handnum = c.HandsCardNum(i) % 13;
-		if (handnum + 1 == areanum || handnum - 1 == areanum || (handnum == 12 && areanum == 0) || (handnum == 0 && areanum == 12))
+		if (handnum != -1)
 		{
-			tmp++;
+			if (handnum + 1 == areanum || handnum - 1 == areanum || (handnum == 12 && areanum == 0) || (handnum == 0 && areanum == 12))
+			{
+				tmp++;
+			}
 		}
 	}
 
@@ -138,11 +152,30 @@ bool Master::CheckLeftArea(Area& a, Player& p, Cpu& c)
 void Master::PlayerWin()
 {
 	game_stop = true;
+	win = PLAYER;
 }
 
 void Master::CpuWin()
 {
 	game_stop = true;
+	win = CPU;
+}
+
+void Master::DrawWin()
+{
+	if (game_stop)
+	{
+		if (win == PLAYER)
+		{
+			SetFontSize(60);
+			DrawString(WINDOW_WIDTH / 2 - 200, WINDOW_HEIGHT / 2, "ÉvÉåÉCÉÑÅ[èüóò", GetColor(255, 0, 0), true);
+		}
+		else if (win == CPU)
+		{
+			SetFontSize(60);
+			DrawString(WINDOW_WIDTH / 2 - 100, WINDOW_HEIGHT / 2, "ÇbÇoÇtèüóò", GetColor(255, 0, 0), true);
+		}
+	}
 }
 
 Master::~Master()

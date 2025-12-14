@@ -36,11 +36,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 
 		//èàóù----------------------------------------------------------------
 
-
-
-		GM.Action(area, player, cpu);
-		player.Action(area);
-		cpu.Action(area);
+		if (!GM.Action(area, player, cpu))
+		{
+			player.Action(area);
+			cpu.Action(area);
+		}
 
 #pragma region âÊëúèàóù
 
@@ -48,6 +48,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hPrevInstance,
 		area.AreaDraw();
 		player.CardDraw();
 		cpu.CardDraw();
+		GM.DrawWin();
 
 #pragma endregion
 		//--------------------------------------------------------------------

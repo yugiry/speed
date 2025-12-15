@@ -10,6 +10,7 @@ private:
 	int gh_card{ -1 };
 	int grab_num{ -1 };
 	bool grab_hand{ false };
+	int test{ -1 };
 
 	CARD hands[4];
 	Point mouse{ 0,0 };

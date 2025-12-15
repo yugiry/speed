@@ -18,7 +18,7 @@ private:
 public:
 	Player();
 	~Player();
-	void Action(Area& );
+	void Action(Area&);
 	void CardDraw();
 	int HandsCardNum(int);
 	CARD GetHandCard();
